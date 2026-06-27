@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>指挥中心 — 抖音直播数据监控平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0a1628 0%, #0f2027 40%, #1a1a2e 100%);
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    /* 网格背板 */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* 玻璃卡片 */
+    .glass-card {
+      position: relative;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 48px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .glass-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.25);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 80px rgba(8,145,178,0.12);
+    }
+    .glass-card .icon-wrap {
+      width: 80px; height: 80px;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+      transition: all 0.4s ease;
+    }
+    .glass-card:hover .icon-wrap {
+      transform: scale(1.1);
+    }
+
+    /* 导航按钮 */
+    .nav-btn {
+      width:32px; height:32px; border:1px solid rgba(255,255,255,0.15);
+      border-radius:8px; background:transparent;
+      color:#94a3b8; font-size:14px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.2s;
+    }
+    .nav-btn:hover:not(.is-disabled) {
+      background:rgba(255,255,255,0.1); color:#e2e8f0; border-color:rgba(255,255,255,0.3);
+    }
+    .nav-btn.is-disabled {
+      opacity:0.3; cursor:not-allowed; pointer-events:none;
+    }
+
+    /* 顶部栏 */
+    .top-bar {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 36px;
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body>
+
+<!-- 顶部栏 -->
+<div class="top-bar">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <!-- 智能导航按钮 -->
+    <button class="nav-btn" id="btnBack" title="后退" onclick="smartBack()">&lt;</button>
+    <button class="nav-btn" id="btnFwd" title="前进" onclick="window.history.forward()">&gt;</button>
+
+    <div style="display:flex; align-items:center; gap:14px; font-size:17px; font-weight:700; color:#e2e8f0; letter-spacing:1px; margin-left:8px;">
+      <span style="width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+                   background:linear-gradient(135deg, #06b6d4, #3b82f6); font-size:18px;">📡</span>
+      抖音直播监控指挥中心
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:18px;">
+    <span style="color:#94a3b8; font-size:14px;">
+      👤 {{ request.user.username }}
+      {% if request.user.is_superuser %}<span style="color:#fbbf24; font-size:11px; margin-left:4px;">超管</span>{% endif %}
+    </span>
+    <a href="{% url 'logout' %}"
+       style="padding:6px 18px; border:1px solid rgba(255,255,255,0.15); border-radius:8px;
+              color:#94a3b8; font-size:13px; text-decoration:none;
+              transition:all 0.2s;"
+       onmouseover="this.style.borderColor='#ef4444';this.style.color='#fca5a5';this.style.background='rgba(239,68,68,0.1)';"
+       onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='#94a3b8';this.style.background='transparent';">
+      退出登录
+    </a>
+  </div>
+</div>
+
+<!-- 主内容区 -->
+<div style="position:relative; z-index:1; display:flex; align-items:center; justify-content:center;
+            min-height:calc(100vh - 68px); padding:40px 24px;">
+  <div style="text-align:center; max-width:960px; width:100%;">
+
+    <h1 style="font-size:36px; font-weight:800; color:#f1f5f9; margin-bottom:10px; letter-spacing:3px;">
+      指挥中心
+    </h1>
+    <p style="color:#64748b; font-size:15px; margin-bottom:12px; letter-spacing:1px;">
+      选择一个子系统进入监控
+    </p>
+    <div style="width:60px; height:3px; margin:0 auto 48px;
+                background:linear-gradient(90deg, #06b6d4, #3b82f6); border-radius:2px;"></div>
+
+    <!-- 双卡片网格 -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px;">
+
+      <!-- 数据大屏卡片 -->
+      <a href="{% url 'dashboard' %}"
+         target="_blank" rel="noopener noreferrer"
+         class="glass-card">
+        <div class="icon-wrap" style="background:linear-gradient(135deg, rgba(6,182,212,0.2), rgba(59,130,246,0.2));">
+          📊
+        </div>
+        <div style="font-size:22px; font-weight:700; color:#e2e8f0; letter-spacing:2px;">实时数据大屏</div>
+        <p style="font-size:13px; color:#64748b; line-height:1.8; max-width:320px;">
+          毫秒级流式数据解析<br>
+          NLP 弹幕情感感知<br>
+          AI 随机森林流量预测
+        </p>
+        <div style="margin-top:4px; padding:6px 16px; border-radius:20px;
+                    background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.2);
+                    color:#22d3ee; font-size:12px; font-weight:600; letter-spacing:1px;">
+          进入大屏 →
+        </div>
+      </a>
+
+      <!-- 管理后台卡片 -->
+      {% if user.is_staff %}
+      <a href="{% url 'admin:index' %}"
+         target="_blank" rel="noopener noreferrer"
+         class="glass-card">
+        <div class="icon-wrap" style="background:linear-gradient(135deg, rgba(168,85,247,0.2), rgba(99,102,241,0.2));">
+          ⚙️
+        </div>
+        <div style="font-size:22px; font-weight:700; color:#e2e8f0; letter-spacing:2px;">系统管理后台</div>
+        <p style="font-size:13px; color:#64748b; line-height:1.8; max-width:320px;">
+          全局场次监控<br>
+          核心指标回溯分析<br>
+          系统权限与柔性熔断管理
+        </p>
+        <div style="margin-top:4px; padding:6px 16px; border-radius:20px;
+                    background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.2);
+                    color:#c084fc; font-size:12px; font-weight:600; letter-spacing:1px;">
+          进入后台 →
+        </div>
+      </a>
+      {% else %}
+      <a href="javascript:void(0);"
+         class="glass-card"
+         onclick="alert('没有权限，请使用管理员账号登录！');"
+         style="opacity:0.45;">
+        <div class="icon-wrap" style="background:rgba(255,255,255,0.05);">
+          🔒
+        </div>
+        <div style="font-size:22px; font-weight:700; color:#94a3b8; letter-spacing:2px;">系统管理后台</div>
+        <p style="font-size:13px; color:#64748b; line-height:1.8; max-width:320px;">
+          全局场次监控<br>
+          核心指标回溯分析<br>
+          系统权限与柔性熔断管理
+        </p>
+        <div style="margin-top:4px; padding:6px 16px; border-radius:20px;
+                    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
+                    color:#64748b; font-size:12px; font-weight:600; letter-spacing:1px;">
+          需要管理员权限
+        </div>
+      </a>
+      {% endif %}
+
+    </div>
+
+    <!-- 状态指示 -->
+    <div style="margin-top:48px; display:flex; align-items:center; justify-content:center; gap:24px; color:#475569; font-size:12px;">
+      <span>🟢 系统运行中</span>
+      <span>🔒 传输加密</span>
+      <span>📡 实时连接</span>
+    </div>
+  </div>
+</div>
+
+<!-- 智能导航按钮：始终可用，智能降级 -->
+<script>
+window.smartBack = function(){
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = '/dashboard/';
+  }
+};
+</script>
+</body>
+</html>

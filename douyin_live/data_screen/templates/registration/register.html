@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册 — 抖音直播数据监控平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #f4f6f9;
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .input-focus {
+      transition: all 0.2s;
+    }
+    .input-focus:focus {
+      border-color: #0891b2;
+      box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+<div class="w-full max-w-md mx-auto px-4">
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-10">
+
+    <div class="flex justify-center mb-6">
+      <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl"
+           style="background: linear-gradient(135deg, #0891b2, #3b82f6);">📡</div>
+    </div>
+
+    <h1 class="text-center text-xl font-bold text-gray-800 mb-1">创建账号</h1>
+    <p class="text-center text-sm text-gray-400 mb-8">注册后即可进入数据监控大屏</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <!-- 用户名 -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-600 mb-1.5">用户名</label>
+        <input type="text" name="username" value="{{ username|default:'' }}"
+               class="w-full px-4 py-2.5 border rounded-xl text-gray-800 text-sm outline-none input-focus
+               {% if errors.username %}border-red-300 bg-red-50{% else %}border-gray-200{% endif %}"
+               placeholder="字母、数字或下划线" required autofocus maxlength="150">
+        {% if errors.username %}<p class="text-xs text-red-500 mt-1">{{ errors.username }}</p>{% endif %}
+      </div>
+
+      <!-- 邮箱 -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-600 mb-1.5">邮箱</label>
+        <input type="email" name="email" value="{{ email|default:'' }}"
+               class="w-full px-4 py-2.5 border rounded-xl text-gray-800 text-sm outline-none input-focus
+               {% if errors.email %}border-red-300 bg-red-50{% else %}border-gray-200{% endif %}"
+               placeholder="example@mail.com" required>
+        {% if errors.email %}<p class="text-xs text-red-500 mt-1">{{ errors.email }}</p>{% endif %}
+      </div>
+
+      <!-- 密码 -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-600 mb-1.5">密码</label>
+        <input type="password" name="password"
+               class="w-full px-4 py-2.5 border rounded-xl text-gray-800 text-sm outline-none input-focus
+               {% if errors.password %}border-red-300 bg-red-50{% else %}border-gray-200{% endif %}"
+               placeholder="至少 6 位字符" required>
+        {% if errors.password %}<p class="text-xs text-red-500 mt-1">{{ errors.password }}</p>{% endif %}
+      </div>
+
+      <!-- 确认密码 -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-600 mb-1.5">确认密码</label>
+        <input type="password" name="confirm_password"
+               class="w-full px-4 py-2.5 border rounded-xl text-gray-800 text-sm outline-none input-focus
+               {% if errors.confirm_password %}border-red-300 bg-red-50{% else %}border-gray-200{% endif %}"
+               placeholder="再次输入密码" required>
+        {% if errors.confirm_password %}<p class="text-xs text-red-500 mt-1">{{ errors.confirm_password }}</p>{% endif %}
+      </div>
+
+      <button type="submit"
+              class="w-full py-2.5 rounded-xl text-white font-semibold text-sm tracking-wider
+                     transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+              style="background: linear-gradient(135deg, #0891b2, #3b82f6);">
+        注册并进入大屏
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-400 mt-6">
+      已有账号？
+      <a href="{% url 'login' %}" class="text-cyan-600 font-medium hover:underline">立即登录</a>
+    </p>
+  </div>
+
+  <p class="text-center text-xs text-gray-300 mt-6">
+    抖音直播数据监控与流量预测平台 © 2026
+  </p>
+</div>
+
+</body>
+</html>

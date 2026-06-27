@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 — 抖音直播全链路监控平台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif; }
+
+    /* 左侧 SVG 波纹 */
+    .brand-bg {
+      position:absolute; inset:0; z-index:0; overflow:hidden;
+    }
+    .wave {
+      position:absolute; bottom:0; left:0; width:200%; height:100%;
+      opacity:0.06;
+      animation: waveDrift 18s ease-in-out infinite;
+    }
+    @keyframes waveDrift {
+      0%,100% { transform:translateX(0) translateY(0); }
+      25%     { transform:translateX(-5%) translateY(-2%); }
+      50%     { transform:translateX(-10%) translateY(0); }
+      75%     { transform:translateX(-5%) translateY(2%); }
+    }
+
+    /* 输入框组 */
+    .input-group {
+      position:relative; display:flex; align-items:center;
+      background:#f5f6f8; border-radius:12px; overflow:hidden;
+      transition:all 0.3s; border:2px solid transparent;
+    }
+    .input-group:focus-within {
+      background:#fff; border-color:#1890ff;
+      box-shadow:0 0 0 4px rgba(24,144,255,0.08);
+    }
+    .input-icon {
+      position:absolute; left:16px; z-index:1; font-size:16px; color:#94a3b8;
+      pointer-events:none; transition:color 0.3s;
+    }
+    .input-group:focus-within .input-icon { color:#1890ff; }
+    .input-field {
+      width:100%; padding:14px 16px 14px 44px; background:transparent;
+      border:none; font-size:15px; color:#1f2937; outline:none;
+    }
+    .input-field::placeholder { color:#cbd5e1; }
+    .input-field-right {
+      width:100%; padding:14px 48px 14px 44px; background:transparent;
+      border:none; font-size:15px; color:#1f2937; outline:none;
+    }
+    .pwd-toggle {
+      position:absolute; right:14px; z-index:1; background:none; border:none;
+      font-size:18px; color:#94a3b8; cursor:pointer; padding:4px;
+      transition:color 0.2s;
+    }
+    .pwd-toggle:hover { color:#374151; }
+
+    /* 自定义 checkbox */
+    .check-wrap { display:flex; align-items:center; gap:8px; cursor:pointer; }
+    .check-wrap input { display:none; }
+    .check-box {
+      width:18px; height:18px; border:2px solid #d1d5db; border-radius:5px;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.2s; font-size:11px; color:transparent;
+    }
+    .check-wrap input:checked + .check-box {
+      background:#1890ff; border-color:#1890ff; color:#fff;
+    }
+
+    .btn-login {
+      width:100%; padding:14px; border:none; border-radius:12px;
+      background:linear-gradient(135deg,#0f172a,#1e3a5f 50%,#1890ff);
+      color:#fff; font-size:16px; font-weight:700; letter-spacing:3px;
+      cursor:pointer; transition:all 0.3s;
+      box-shadow:0 6px 24px rgba(24,144,255,0.2);
+      position:relative; overflow:hidden;
+    }
+    .btn-login:hover {
+      box-shadow:0 10px 32px rgba(24,144,255,0.35);
+      filter:brightness(1.08);
+    }
+    .btn-login:active { transform:scale(0.97); }
+    /* hover 箭头动画 */
+    .btn-arrow {
+      display:inline-block; opacity:0; transform:translateX(-8px);
+      transition:all 0.3s; margin-left:4px;
+    }
+    .btn-login:hover .btn-arrow {
+      opacity:1; transform:translateX(0);
+    }
+  </style>
+</head>
+<body>
+
+<div style="display:flex; min-height:100vh;">
+
+  <!-- ========== 左侧品牌区 (60%) ========== -->
+  <div style="flex:0 0 60%; position:relative; background:linear-gradient(160deg,#0b0f19 0%,#111827 50%,#0f172a 100%);
+              display:flex; align-items:center; justify-content:center; overflow:hidden;">
+
+    <!-- 波纹背景 -->
+    <div class="brand-bg">
+      <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path fill="#38bdf8" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,170.7C960,160,1056,192,1152,208C1248,224,1344,224,1392,224L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"/>
+      </svg>
+      <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none"
+           style="bottom:-40px; opacity:0.04; animation-delay:-9s; animation-direction:reverse;">
+        <path fill="#818cf8" d="M0,160L48,176C96,192,192,224,288,208C384,192,480,128,576,122.7C672,117,768,171,864,186.7C960,203,1056,181,1152,160C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"/>
+      </svg>
+    </div>
+
+    <!-- 品牌文案 -->
+    <div style="position:relative; z-index:1; text-align:center; padding:40px; max-width:480px;">
+      <div style="display:inline-flex; align-items:center; justify-content:center;
+                  width:64px;height:64px;border-radius:18px;margin-bottom:32px;
+                  background:linear-gradient(135deg,#06b6d4,#3b82f6);font-size:30px;box-shadow:0 0 32px rgba(6,182,212,0.25);">
+        📡
+      </div>
+      <h2 style="font-size:30px;font-weight:800;color:#f1f5f9;letter-spacing:-0.01em;margin-bottom:16px;">
+        全链路数据感知
+      </h2>
+      <p style="font-size:15px;color:#64748b;line-height:1.9;">
+        从 DOM 实时采集到 NLP 情感计算，<br>
+        从 Random Forest 预测到双库持久化，<br>
+        一站式直播数据监控解决方案。
+      </p>
+      <!-- 迷你趋势图 SVG -->
+      <svg style="margin-top:40px;width:240px;height:60px;opacity:0.2;" viewBox="0 0 240 60">
+        <polyline fill="none" stroke="#38bdf8" stroke-width="2"
+                  points="0,45 30,40 60,35 90,30 120,25 150,28 180,22 210,15 240,10"/>
+        <polyline fill="none" stroke="#818cf8" stroke-width="1.5" stroke-dasharray="4,3"
+                  points="210,15 220,12 240,8"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ========== 右侧操作区 (40%) ========== -->
+  <div style="flex:1; display:flex; align-items:center; justify-content:center;
+              background:#fff; padding:60px 48px;">
+    <div style="width:100%; max-width:380px;">
+
+      <h3 style="font-size:24px;font-weight:800;color:#0f172a;margin-bottom:6px;">欢迎回来</h3>
+      <p style="font-size:14px;color:#94a3b8;margin-bottom:40px;">登录以进入监控控制台</p>
+
+      <!-- 错误提示 -->
+      {% if error %}
+      <div style="padding:12px 16px;background:#fef2f2;border:1px solid #fecaca;
+                  border-radius:10px;color:#dc2626;font-size:13px;margin-bottom:24px;text-align:center;">
+        ⚠️ {{ error }}
+      </div>
+      {% endif %}
+
+      <!-- 登录表单 -->
+      <form method="post" novalidate autocomplete="off">
+        {% csrf_token %}
+
+        <!-- 用户名 -->
+        <div style="margin-bottom:20px;">
+          <label style="font-size:12px;font-weight:600;color:#64748b;letter-spacing:1px;display:block;margin-bottom:8px;">用户名</label>
+          <div class="input-group">
+            <span class="input-icon">👤</span>
+            <input type="text" name="username" class="input-field"
+                   placeholder="请输入用户名" required autofocus autocomplete="off">
+          </div>
+        </div>
+
+        <!-- 密码 -->
+        <div style="margin-bottom:20px;">
+          <label style="font-size:12px;font-weight:600;color:#64748b;letter-spacing:1px;display:block;margin-bottom:8px;">密码</label>
+          <div class="input-group">
+            <span class="input-icon">🔒</span>
+            <input type="password" name="password" id="pwdField" class="input-field-right"
+                   placeholder="请输入密码" required autocomplete="new-password">
+            <button type="button" class="pwd-toggle" id="pwdToggle"
+                    onclick="togglePassword()" title="显示密码">👁️</button>
+          </div>
+        </div>
+
+        <!-- 去注册 -->
+        <div style="text-align:right;margin-bottom:28px;">
+          <a href="{% url 'register' %}"
+             style="font-size:13px;color:#94a3b8;text-decoration:none;transition:all 0.2s;"
+             onmouseover="this.style.color='#1890ff';this.style.textDecoration='underline';"
+             onmouseout="this.style.color='#94a3b8';this.style.textDecoration='';">
+            去注册 →
+          </a>
+        </div>
+
+        <!-- 登录按钮 -->
+        <button type="submit" class="btn-login">
+          登 录<span class="btn-arrow">→</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+<script>
+function togglePassword(){
+  var f = document.getElementById('pwdField');
+  var t = document.getElementById('pwdToggle');
+  if(f.type === 'password'){
+    f.type = 'text'; t.textContent = '🙈';
+  } else {
+    f.type = 'password'; t.textContent = '👁️';
+  }
+}
+</script>
+</body>
+</html>

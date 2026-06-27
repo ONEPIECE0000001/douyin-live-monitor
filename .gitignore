@@ -1,0 +1,49 @@
+# 环境变量 (含密码，绝对不能提交)
+.env
+
+# Python 虚拟环境
+.venv/
+venv/
+env/
+
+# Python 字节码缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# Django
+*.log
+/staticfiles/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 历史归档 (训练数据、测试脚本等)
+archive/
+
+# 模型文件 (训练产物，体积较大，建议 Git LFS 或独立分发)
+*.pkl
+
+# 未知礼物自动收录记录 (运行期自动生成)
+unknown_gifts.json
+
+# Jupyter Notebook 检查点
+.ipynb_checkpoints/
+
+# 单元测试 / 覆盖率报告
+.coverage
+htmlcov/
+.pytest_cache/
+
+# 环境备份
+*.bak
+
+# Claude Code
+.claude/
