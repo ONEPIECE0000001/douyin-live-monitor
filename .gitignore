@@ -47,3 +47,5 @@ htmlcov/
 
 # Claude Code
 .claude/
+
+.trae/
