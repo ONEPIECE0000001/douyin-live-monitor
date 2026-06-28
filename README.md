@@ -541,3 +541,6 @@ build_dataset.py ──▶ MongoDB ──▶ CSV ──▶ train_model.py ──
 ---
 
 > 📝 **维护提示**：每次修改模型 (models.py) 后请执行 `python manage.py makemigrations` + `migrate`；每次新增礼物到 GIFT_MAP 后请同步更新本文档的维护日期。
+
+## 🤝 参与贡献
+欢迎提交 Pull Request 来一起完善这个项目！
