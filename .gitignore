@@ -47,3 +47,6 @@ htmlcov/
 
 # Claude Code
 .claude/
+
+# 忽略 Trae 编辑器配置
+.trae/
