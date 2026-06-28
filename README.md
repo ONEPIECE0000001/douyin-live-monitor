@@ -544,4 +544,3 @@ build_dataset.py ──▶ MongoDB ──▶ CSV ──▶ train_model.py ──
 
 ## 🤝 参与贡献
 欢迎提交 Pull Request 来一起完善这个项目！
-联系方式wx：chen2118695974
